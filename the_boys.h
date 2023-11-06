@@ -18,7 +18,7 @@ struct coordenadas {
 
 struct heroi {
 	int id;
-	struct lista hab;
+	struct conjuntos hab;
 	int paciencia;
 	int velocidade;
 	int xp;
@@ -35,41 +35,42 @@ struct base {
 
 struct missao {
 	int id;
-	struct lista hab_necessarias;
+	struct conjuntos hab_necessarias;
 	struct coordenadas missao;
 }
 
 struct mundo {
 
 	int n_herois;
-	struct fila herois;
+	struct lista herois;
 
 	int n_bases;
-	struct fila bases;
+	struct lista bases;
 
 	int n_missoes;
-	struct fila missoes;
+	struct lista missoes;
 
 	int n_habilidades;
 	struct coordenadas mundo;
 }
 
+int aleat (int min, int max);
+
+//inicializações
+void inicializa_herois (struct mundo);
+void incializa_bases (struct mundo);
+void incializa_missoes (struct mundo);
+void eventos_iniciais (struct mundo);
+
+//eventos
 void chega (int *tempo, struct* heroi, struct* base);
-
 void espera (int *tempo, struct* heroi, struct* base);
-
 void desiste (int *tempo, struct* heroi, struct* base);
-
 void avisa (int *tempo, struct* base);
-
 void entra (int *tempo, struct* heroi, struct* base);
-
 void sai (int *tempo, struct* heroi, struct* base);
-
 void viaja (int *tempo, struct* heroi, struct* base);
-
 void missao (int *tempo, struct* mundo);
-
 void fim (int *tempo);
 
 

@@ -54,6 +54,11 @@ struct mundo {
 	struct coordenadas mundo;
 }
 
+typedef struct {
+	int tempo;
+	void *evento;
+} Evento;
+
 int aleat (int min, int max);
 
 //inicializações

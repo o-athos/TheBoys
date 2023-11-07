@@ -62,10 +62,10 @@ typedef struct {
 int aleat (int min, int max);
 
 //inicializações
-void inicializa_herois (struct mundo);
-void incializa_bases (struct mundo);
-void incializa_missoes (struct mundo);
-void eventos_iniciais (struct mundo);
+void inicializa_herois (struct mundo *m);
+void incializa_bases (struct mundo *m);
+void incializa_missoes (struct mundo *m);
+void eventos_iniciais (struct mundo *m);
 
 //eventos
 void chega (int *tempo, struct* heroi, struct* base);

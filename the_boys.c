@@ -100,7 +100,7 @@ void desiste (int tempo, struct* heroi, struct* base){
 
 void avisa (int tempo, struct* base){
 
-
+	
 		
 		
 	

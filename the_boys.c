@@ -1,5 +1,6 @@
 #include "the_boys.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 
 int aleat (int min, int max){
@@ -7,62 +8,65 @@ int aleat (int min, int max){
 }
 
 
-void inicializa_herois (struct mundo m){
+void inicializa_herois (struct mundo *m){
 
-	for (int i = 0; i < m->n_herois; i++){
-		herois[i].id = i;
-		herois[i].xp = 0;
-		herois[i].paciencia = aleat(0, 100);
-		herois[i].velocidade = aleat(50, 5000);
+	for (int i = 0; i < N_HEROIS; i++){
+		m->herois[i].id = i;
+		m->herois[i].xp = 0;
+		m->herois[i].paciencia = aleat(0, 100);
+		m->herois[i].velocidade = aleat(50, 5000);
 
 		int num_habilidades = aleat (1, 3);
 		for (int j = 0; j < num_habilidades; j++)
-			herois[i].hab[j] = aleat(0, 9);
+			m->herois[i].hab[j] = aleat(0, 9);
 	}
 }
 
 void inicializa_bases (struct mundo *m){
 
-	for (int = 0; i < m->n_bases; i++){
-		bases[i]->id = i;
-		bases[i]->coordenada.x = aleat(0, N_TAMANHO_MUNDO-1);
-	    bases[i]->coordenada.y = aleat(0, N_TAMANH_MUNDO-1);	
-		bases[i]->lotacao = aleat(3, 10);
-		bases[i]->presentes = cria_conjunto(bases[i]->lotacao);
-		bases[i]->espera = cria_fila ();
+	for (int i = 0; i < N_BASES; i++){
+		m->bases[i].id = i;
+		m->bases[i].coord.x = aleat(0, N_TAMANHO_MUNDO-1);
+	    m->bases[i].coord.y = aleat(0, N_TAMANHO_MUNDO-1);	
+		m->bases[i].lotacao = aleat(3, 10);
+		m->bases[i].presentes = cria_cjt(m->bases[i].lotacao);
+		m->bases[i].espera = fila_cria ();
 	}
+}
 
 void inicializa_missoes (struct mundo *m){
 	
-	for (int i = 0; i < m->n_missoes; i++){
-		missoes[i]->id = i;
-		missoes[i]->coordenada.x = aleat(0, N_TAMANHO_MUNDO-1);                             
- 	    missoes[i]->coordenada.y = aleat(0, N_TAMANHO_MUNDO-1);
-		missoes[i]->hab_necessarias = 
+	for (int i = 0; i < N_MISSOES; i++){
+		m->missoes[i].id = i;
+		m->missoes[i].coord.x = aleat(0, N_TAMANHO_MUNDO-1);                             
+ 	    m->missoes[i].coord.y = aleat(0, N_TAMANHO_MUNDO-1);
+		//m->missoes[i].hab_necessarias = 
 
+	}
+}
 
 void eventos_inicias (struct mundo *m){
 	
-	for (int i = 0; i < m->n_herois; i++){
+	for (int i = 0; i < N_HEROIS; i++){
 		int base = aleat(0, 8);
 		int tempo = aleat(0, 4320);
 		
-		Evento *evento_chega = chega(tempo, &herois[i], base);
+		evento_t *evento_chega = chega(tempo, m->&herois[i], base);
 
 		insere_lef(LEF, evento_chega);
 	}
 
-	for (int i = 0; i < m->n_missoes; i++){
+	for (int i = 0; i < N_MISSOES; i++){
 		int tempo = aleat (0, T_FIM_DO_MUNDO);
 		
-		Evento *evento_missao = missao(tempo, &missoes[i]);
+		evento_t *evento_missao = missao(tempo, m->&missoes[i]);
 		insere_lef (LEF, evento_missao);
 	}
 
-	Evento *eventoFIM = fim(T_FIM_DO_MUNDO);
+	evento_t *eventoFIM = fim(T_FIM_DO_MUNDO);
 	insere_lef (LEF, eventoFIM);
 }
-
+/*
 void chega (int tempo, struct* heroi, struct* base){
 
 	heroi->id_base = base->id;
@@ -100,7 +104,7 @@ void desiste (int tempo, struct* heroi, struct* base){
 
 void avisa (int tempo, struct* base){
 
-	
+*/	
 		
 		
 	

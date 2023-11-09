@@ -1,17 +1,18 @@
 #include <stdio.h>
-#include "LEF.h"
+#include <stdlib.h>
+#include "lef.h"
 
 struct evento_t *cria_evento (int tempo, int tipo, int dado1, int dado2){
 	
-	struct evento_t *novo = malloc (sizeof evento_t);
+	struct evento_t *novo = (struct evento_t *)malloc (sizeof (struct evento_t));
 
 	if (!novo)
 		return NULL;
 
-	novo.tempo = tempo;
-	novo.tipo = tipo;
-	novo.dado1 = dado1;
-	novo.dado2 = daod2;
+	novo->tempo = tempo;
+	novo->tipo = tipo;
+	novo->dado1 = dado1;
+	novo->dado2 = dado2;
 	
 	return novo;
 }
@@ -23,9 +24,9 @@ struct evento_t *destroi_evento (struct evento_t *e){
 	return NULL;
 }
 
-struct *cria_lef (){
+struct lef_t *cria_lef (){
 	
-	struct lef_t *l = malloc (sizeof (struct lef_t));
+	struct lef_t *l = (struct lef_t *)malloc (sizeof (struct lef_t));
 	
 	if (!l)
 		return NULL;
@@ -36,42 +37,42 @@ struct *cria_lef (){
 
 struct lef_t *destroi_lef (struct lef_t *l){
 	
-	if (l != NULL) {
-        while (l->primeiro != NULL) {
-            struct nodo_lef_t *temp = l->primeiro;
-            l->primeiro = l->primeiro->prox;
-            destroi_evento(temp->evento);
-            free(temp);
+        if (l != NULL) {
+          while (l->primeiro != NULL) {
+              struct nodo_lef_t *temp = l->primeiro;
+              l->primeiro = l->primeiro->prox;
+              destroi_evento(temp->evento);
+              free(temp);
+          }
+          free(l);
         }
-        free(l);
-    }
-    return NULL;
-
+        return NULL;
 
 }
 
 int insere_lef (struct lef_t *l, struct evento_t *e){
 
-	struct nodo_lef_t *novo = malloc (sizeof struct nodo_lef_t);
+	struct nodo_lef_t *novo = (struct nodo_lef_t *)malloc (sizeof (struct nodo_lef_t));
 
 	if (novo == NULL)
-		return;
+		return 0;
 	
 	novo->evento = e;
 	novo->prox = NULL;
 
-	if (l->primeiro == NULL || novo->tempo < l->primeiro->evento->tempo){
+	if (l->primeiro == NULL || novo->evento->tempo < l->primeiro->evento->tempo){
 		novo->prox = l->primeiro;
 		l->primeiro = novo;
 	}
 	else {
 		struct nodo_lef_t *aux = l->primeiro;
-		while (aux->prox != NULL && novo->tempo >= aux->evento->tempo){
+		while (aux->prox != NULL && novo->evento->tempo >= aux->evento->tempo){
 			aux = aux->prox;
 		}
 		novo->prox = aux->prox;
 		aux->prox = novo;
 	}
+	return 1;
 }
 
 
@@ -85,7 +86,7 @@ struct evento_t *retira_lef (struct lef_t *l){
     struct evento_t *eventoRetirado = primeiroNodo->evento;
 
     
-    l->primeiro = primeiroNodo->prox;
+    l->primeiro = l->primeiro->prox;
 
     
     free(primeiroNodo);
@@ -105,13 +106,13 @@ void imprime_lef (struct lef_t *l){
 
 	int total_eventos = 0;
 
-	while (aux != NULL && aux->prox != NULL){
+	while (aux != NULL){
 		printf("%d %d %d %d\n", aux->evento->tempo, aux->evento->tipo, aux->evento->dado1, aux->evento->dado2);
 		aux = aux->prox;
 		total_eventos++;
 	}
 	
-	printf("%d ", total_eventos);
+	printf("%d \n", total_eventos);
 }
 
 

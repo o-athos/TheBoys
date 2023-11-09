@@ -1,77 +1,105 @@
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
 #include "fila.h"
 
-void enfileira (struct fila *f, int membro){
+struct fila *fila_cria (){
 
-	// verifica se ja esta cheia
-	if (fila_cheia(f)){
-		printf("ta cheia, n da pra entrar na fila\n");
-	}
+	struct fila *nova = (struct fila *) malloc (sizeof (struct fila ));
 
-	// adiciona o membro no final da fila
-	f->v[f->fim] = membro;
-	f->fim++;
-}
+	if (!nova)
+		return NULL;
 
-int desenfileira (struct fila *f, int* membro){
+	nova->ini = NULL;
+	nova->fim = NULL;
+	nova->tamanho = 0;
 	
-	// verifica se ja esta vazia
-	if (fila_vazia(f)){
-		printf("ta vazia, n tem oq tirar\n");
-		*membro = NULL;
-		return 1;
-	}
-		
-	// retira o membro do inicio
-	*membro = f->v[0];
-	for (int i = 0; i < f->fim-1; i++)
-		f->v[i] = f->v[i+1];
-	f->fim--;
-
-	return 0;
+	return nova;
 }
 
-bool fila_cheia (struct fila *f){
+void fila_destroi (struct fila **f){
 	
-	if (f->fim == MAX-1)
-		return true;
-	return false;
+	 while ((*f)->ini != NULL) {
+        struct nodo *temp = (*f)->ini;
+        (*f)->ini = (*f)->ini->prox;
+        free(temp);
+	 }
+     free(*f);
+     *f = NULL;
 }
 
-bool fila_vazia (struct fila *f){
-
-	if (f->fim == 0)
-		return true;
-	return false;
-}
-
-bool ve_inicio (struct fila *f, int* membro){
+int enqueue (struct fila *fila, int dado){
 	
-	if (fila_vazia(f)){
-		printf("nao tem inicio, fila vazia");
-		return false;
-	}
-		
-	*membro = f->v[0];
-	return true;
-}	
+	struct nodo *novo = (struct nodo *)malloc(sizeof(struct nodo));
 
-void inverter_fila (struct fila *f){
-	struct pilha pilha;
-	pilha.topo = 0;
-	int elemento;
+	if (!novo)
+		return 0;
 
-	//enfileira os elemento da fila na pilha
-	while (!fila_vazia(f)){
-	 	desenfileira(f, &elemento);
-		empilha(&pilha, elemento);
+	novo->chave = dado;
+	novo->prox = NULL;
+
+	if (fila->fim == NULL){
+		fila->ini = novo;
+		fila->fim = novo;
+	} 
+	else {
+		fila->fim->prox = novo;
+		fila->fim = novo;
 	}
 
-	// desempilha os elementos da pilha na fila
-	while (pilha.topo > 0){
-		int elemento = desempilha(&pilha);
-		enfileira(f, elemento);
-	}
+	fila->tamanho++;
+	return 1;
 }
+
+int dequeue (struct fila *fila, int *dado){
+	
+	if (fila_vazia(fila))
+		return 0;
+
+	*dado = fila->ini->chave;
+	struct nodo *temp = fila->ini;
+	fila->ini = fila->ini->prox;
+	free(temp);
+
+	if (fila->ini == NULL)
+		fila->fim = NULL;
+
+	fila->tamanho--;
+	return 1;
+}
+
+int fila_tamanho (struct fila *fila){
+	return fila->tamanho;
+}
+
+int fila_vazia (struct fila *fila){
+	return fila->ini == NULL;
+}
+
+void fila_imprime (struct fila *fila){
+
+	struct nodo *aux = fila->ini;
+
+	printf("[ ");
+	while (aux != NULL){
+		printf("%d ", aux->chave);
+		aux = aux->prox;
+	}
+	printf("]\n");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

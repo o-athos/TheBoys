@@ -41,16 +41,14 @@ struct missao {
 
 struct mundo {
 
-	int n_herois;
-	struct heroi *herois;
+        int relogio;
+        
+	struct heroi* herois[N_HEROIS];
 
-	int n_bases;
-	struct base *bases;
+	struct base* bases[N_BASES];
 
-	int n_missoes;
-	struct missao *missoes;
+	struct missao* missoes[N_MISSOES];
 
-	int n_habilidades;
 	struct coordenadas mundo;
 };
 
@@ -58,9 +56,19 @@ struct mundo {
 int aleat (int min, int max);
 
 //inicializações
+struct mundo* cria_mundo ();
+void destroi_mundo (struct mundo *m);
+void inicializa_mundo (struct mundo *m);
+void imprime_mundo (struct mundo *m);
+struct heroi* cria_heroi (int id);
 void inicializa_herois (struct mundo *m);
+void imprime_heroi (struct heroi *h);
+struct base* cria_base (int id);
 void inicializa_bases (struct mundo *m);
+void imprime_base (struct base *b);
+struct missao* cria_missao (int id);
 void inicializa_missoes (struct mundo *m);
+void imprime_missao (struct missao *m);
 void eventos_iniciais (struct mundo *m);
 
 //eventos

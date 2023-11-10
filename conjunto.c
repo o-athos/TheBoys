@@ -168,12 +168,16 @@ struct conjunto *copia_cjt(struct conjunto *c) {
 }
 
 struct conjunto *cria_subcjt_cjt (struct conjunto *c, int n){
+	
+	  struct conjunto *subcjt = copia_cjt(c);
 
+	  
+ 	  while (subcjt->card > n) {
+    	 int idx = rand() % (subcjt->card);
+    	 retira_cjt (subcjt, subcjt->v[idx]);
+  	  }
 
-
-
-
-
+      return subcjt;
 }
 
 void imprime_cjt(struct conjunto *c){
@@ -201,19 +205,12 @@ int incrementa_iterador_cjt (struct conjunto *c, int *ret_iterador){
 }
 
 int retira_um_elemento_cjt (struct conjunto *c){
-	if (c->card == 0)
-		return -1;
-
-	int indice = rand() % c->card;
-
-	 int elemento = c->v[indice];
-
-    for (int i = indice; i < c->card - 1; i++) {
-        c->v[i] = c->v[i + 1];
-    }
-
-    c->card--;
-    return elemento;
+	if (!vazio_cjt(c)) {
+    	int elemento = c->v[0];
+    	retira_cjt(c, elemento);
+    	return elemento;
+ 	}
+	return -1; 
 }
 
 

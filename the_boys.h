@@ -62,12 +62,15 @@ void inicializa_mundo (struct mundo *m);
 void imprime_mundo (struct mundo *m);
 struct heroi* cria_heroi (int id);
 void inicializa_herois (struct mundo *m);
+void destroi_herois (struct mundo *m);
 void imprime_heroi (struct heroi *h);
 struct base* cria_base (int id);
 void inicializa_bases (struct mundo *m);
+void destroi_bases (struct mundo *m);
 void imprime_base (struct base *b);
 struct missao* cria_missao (int id);
 void inicializa_missoes (struct mundo *m);
+void destroi_missoes (struct mundo *m);
 void imprime_missao (struct missao *m);
 void eventos_iniciais (struct mundo *m);
 

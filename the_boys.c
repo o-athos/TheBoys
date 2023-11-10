@@ -23,11 +23,12 @@ struct mundo* cria_mundo() {
 
 void destroi_mundo(struct mundo *m) {
     // Libere memória alocada para os vetores e, em seguida, para a estrutura mundo
-    free(m->herois);
-    free(m->bases);
-    free(m->missoes);
-    // Libere o vetor de habilidades se alocado dinamicamente
-    // free(m->habilidades);
+    destroi_herois(m);
+
+    destroi_bases(m);
+
+    destroi_missoes (m);
+
     free(m);
 }
 
@@ -54,6 +55,14 @@ void inicializa_herois (struct mundo *m){
 
 	for (int i = 0; i < N_HEROIS; i++){
 		m->herois[i] = cria_heroi(i);
+	}
+}
+
+void destroi_herois (struct mundo *m){
+	
+	for (int i = 0; i < N_HEROIS; i++){
+		destroi_cjt(m->herois[i]->hab);
+		free(m->herois[i]);
 	}
 }
 
@@ -91,6 +100,15 @@ void inicializa_bases (struct mundo *m){
 	}
 }
 
+void destroi_bases (struct mundo *m){
+	for (int i = 0; i < N_BASES; i++){
+		destroi_cjt(m->bases[i]->presentes);
+		fila_destroi (&(m->bases[i]->espera));
+		free(m->bases[i]);
+	}
+}
+
+
 void imprime_base(struct base *b) {
     printf("ID: %d\n", b->id);
     printf("Coordenadas: (%d, %d)\n", b->coord.x, b->coord.y);
@@ -124,6 +142,15 @@ void inicializa_missoes (struct mundo *m){
 		m->missoes[i] = cria_missao(i);
 	}
 }
+
+void destroi_missoes (struct mundo *m){
+
+	for (int i = 0; i < N_MISSOES; i++){
+		destroi_cjt(m->missoes[i]->hab_necessarias);
+		free(m->missoes[i]);
+	}
+}
+
 
 void imprime_missao(struct missao *m) {
     printf("ID: %d\n", m->id);

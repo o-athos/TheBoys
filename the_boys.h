@@ -10,6 +10,16 @@
 #define N_BASES 8
 #define N_MISSOES 5256
 
+#define CHEGA 1
+#define ESPERA 2
+#define DESISTE 3
+#define AVISA 4
+#define ENTRA 5
+#define SAI 6
+#define VIAJA 7
+#define MISSAO 8
+#define FIM 9
+
 
 struct coordenadas {
 	int x;
@@ -43,6 +53,10 @@ struct mundo {
 
         int relogio;
         
+        int cumpridas;
+        
+        int tentativas;
+        
 	struct heroi* herois[N_HEROIS];
 
 	struct base* bases[N_BASES];
@@ -72,18 +86,18 @@ struct missao* cria_missao (int id);
 void inicializa_missoes (struct mundo *m);
 void destroi_missoes (struct mundo *m);
 void imprime_missao (struct missao *m);
-void eventos_iniciais (struct mundo *m);
+void eventos_iniciais (struct mundo *m, struct lef_t *LEF);
 
 //eventos
-void chega (int tempo, struct heroi *h, struct base *b);
-void espera (int tempo, struct heroi *h, struct base *b);
-void desiste (int tempo, struct heroi *h, struct base *b);
-void avisa (int tempo, struct base *b);
-void entra (int tempo, struct heroi *h, struct base *b);
-void sai (int tempo, struct heroi *h, struct base *b);
-void viaja (int tempo, struct heroi *h, struct base *b);
-void missao (int tempo, struct mundo *m);
-void fim (int tempo);
+void chega (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
+void espera (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
+void desiste (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
+void avisa (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
+void entra (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
+void sai (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
+void viaja (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
+void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
+void fim (int tempo, struct mundo *m);
 
 
 

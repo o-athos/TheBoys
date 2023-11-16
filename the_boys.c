@@ -267,14 +267,16 @@ void avisa (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *L
 	printf("%6d: AVISA PORTEIRO BASE %d (%2d/%2d) FILA ", tempo, evento->dado2, fila_tamanho(m->bases[evento->dado2]->espera), m->bases[evento->dado2]->lotacao);
    	fila_imprime (m->bases[evento->dado2]->espera);	
 	while (cardinalidade_cjt(m->bases[evento->dado2]->presentes) < m->bases[evento->dado2]->lotacao && !fila_vazia(m->bases[evento->dado2]->espera)){
-		int *heroi_entra;
+		int *heroi_entra = malloc (sizeof(int));
 		dequeue(m->bases[evento->dado2]->espera, heroi_entra);
-		insere_cjt(m->bases[evento->dado2]->presentes, heroi_entra);
+		insere_cjt(m->bases[evento->dado2]->presentes, *heroi_entra);
 
-		struct evento_t *evento_entra = cria_evento (tempo, ENTRA, heroi_entra, evento->dado2);
+		struct evento_t *evento_entra = cria_evento (tempo, ENTRA, *heroi_entra, evento->dado2);
 		insere_lef (LEF, evento_entra);
 
-		printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, evento->dado2, heroi_entra);
+		printf("%6d: AVISA PORTEIRO BASE %d ADMITE %2d\n", tempo, evento->dado2, *heroi_entra);
+
+		free(heroi_entra);
 	}
 }
 
@@ -329,10 +331,11 @@ void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *
 
 	printf("%6d: MISSSAO %d HAB REQ: ", tempo, evento->dado1);
 	imprime_cjt (m->missoes[evento->dado1]->hab_necessarias);
-	printf("\n");
 	
 	int x_missao = m->missoes[evento->dado1]->coord.x;
 	int y_missao = m->missoes[evento->dado1]->coord.y;	
+
+	struct lef_t *ordem_bases = cria_lef();
 
 	for (int i = 0; i < N_BASES; i++){
 		int x_base = m->bases[i]->coord.x;
@@ -345,27 +348,25 @@ void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *
 
 		struct evento_t *base = cria_evento (distancia, -1, i, 0);
 
-		struct lef_t *ordem_bases = cria_lef();
-
 		insere_lef(ordem_bases, base);
 	}
 	
 	int j = 0;
 	int cumpri = 0;
-	while (!cumpri && j != N_BASES){
-		struct evento_t *b = retira_lef (ordem_bases);
+	struct evento_t *b = NULL;
+	struct conjunto *hab_na_base = cria_cjt(N_HABILIDADES);
 
-		struct conjunto *hab_na_base = cria_cjt(N_HABILIDADES);
+	while (!cumpri && j != N_BASES){
+		b = retira_lef (ordem_bases);
 
 		for (int i = 0; i < m->bases[b->dado2]->lotacao; i++){
-			int id_heroi = m->bases[b->dado2]->presentes[i];
+			int id_heroi = m->bases[b->dado2]->presentes->v[i];
 
-			hab_na_base = conjunto_uniao (hab_na_base, m->herois[id_heroi]->hab);
+			hab_na_base = uniao_cjt (hab_na_base, m->herois[id_heroi]->hab);
 		}
 
 		printf("%6d: MISSAO %d HAB BASE %d: ", tempo, evento->dado1, b->dado1);
 		imprime_cjt (hab_na_base);
-		printf("\n");
 
 
 		if (contido_cjt(m->missoes[evento->dado1]->hab_necessarias, hab_na_base))
@@ -375,7 +376,6 @@ void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *
 
 		m->tentativas++;
 		j++;
-		free(b);
 	}
 
 	if (cumpri){
@@ -383,10 +383,9 @@ void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *
 		m->cumpridas++;
 		printf("%6d: MISSAO %d CUMPRIDA BASE %d HEROIS: ", tempo, evento->dado1, b->dado1);
 	   	imprime_cjt(m->bases[b->dado1]->presentes);
-		printf("\n");
 
 		for (int h = 0; h < m->bases[b->dado2]->lotacao; h++){
-			int id_heroi = m->bases[b->dado2]->presentes[h];
+			int id_heroi = m->bases[b->dado2]->presentes->v[h];
 
 			m->herois[id_heroi]->xp++;
 		}

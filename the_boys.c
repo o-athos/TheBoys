@@ -66,6 +66,7 @@ void destroi_herois (struct mundo *m){
 	for (int i = 0; i < N_HEROIS; i++){
 		destroi_cjt(m->herois[i]->hab);
 		free(m->herois[i]);
+		m->herois[i] = NULL;
 	}
 }
 
@@ -197,7 +198,7 @@ void imprime_mundo(struct mundo *m) {
 void eventos_iniciais (struct mundo *m, struct lef_t *LEF){
 	
 	for (int i = 0; i < N_HEROIS; i++){
-		int base = aleat(0, 8);
+		int base = aleat(0, 7);
 		int tempo = aleat(0, 4320);
 		
 		struct evento_t *evento_chega = cria_evento(tempo, CHEGA, m->herois[i]->id, base);
@@ -223,17 +224,23 @@ void chega (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *L
 
 	m->herois[evento->dado1]->id_base = evento->dado2;
 
-	bool espera = (fila_tamanho(m->bases[evento->dado2]->espera) > 0) ? (m->herois[evento->dado1]->paciencia > 10 * fila_tamanho(m->bases[evento->dado2]->espera)) : true;
+	int espera = 0;
+   	if ((cardinalidade_cjt(m->bases[evento->dado2]->presentes) < m->bases[evento->dado2]->lotacao) && (fila_vazia(m->bases[evento->dado2]->espera)))
+		espera = 1;
+	else
+		espera = (m->herois[evento->dado1]->paciencia) > (10 * fila_tamanho(m->bases[evento->dado2]->espera));
+
+	// bool espera = (fila_tamanho(m->bases[evento->dado2]->espera) > 0) ? (m->herois[evento->dado1]->paciencia > 10 * fila_tamanho(m->bases[evento->dado2]->espera)) : true;
 
 	if (espera){
 		struct evento_t *evento_espera = cria_evento (tempo, ESPERA, evento->dado1, evento->dado2);
 		insere_lef (LEF, evento_espera);
-		printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) ESPERA\n", tempo, evento->dado1, evento->dado2, fila_tamanho(m->bases[evento->dado2]->espera), m->bases[evento->dado2]->lotacao);
+		printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) ESPERA\n", tempo, evento->dado1, evento->dado2, cardinalidade_cjt(m->bases[evento->dado2]->presentes), m->bases[evento->dado2]->lotacao);
 	}
 	else {
 		struct evento_t *evento_desiste = cria_evento (tempo, DESISTE, evento->dado1, evento->dado2);
 		insere_lef (LEF, evento_desiste);
-		printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) DESISTE\n", tempo, evento->dado1, evento->dado2, fila_tamanho(m->bases[evento->dado2]->espera), m->bases[evento->dado2]->lotacao);
+		printf("%6d: CHEGA HEROI %2d BASE %d (%2d/%2d) DESISTE\n", tempo, evento->dado1, evento->dado2, cardinalidade_cjt(m->bases[evento->dado2]->presentes), m->bases[evento->dado2]->lotacao);
 	}
 }
 
@@ -245,7 +252,7 @@ void espera (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *
 	struct evento_t *evento_avisa = cria_evento (tempo, AVISA, evento->dado1, evento->dado2);
 	insere_lef (LEF, evento_avisa);
 
-	printf("%6d: ESPERA HEROI %2d BASE %d\n", tempo, evento->dado1, evento->dado2);
+	printf("%6d: ESPERA HEROI %2d BASE %d (%2d)\n", tempo, evento->dado1, evento->dado2, fila_tamanho(m->bases[evento->dado2]->espera)-1);
 }
 
 
@@ -253,7 +260,7 @@ void desiste (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t 
 
 	int id_base = aleat (0, N_BASES - 1);
 
-	struct evento_t *evento_viaja = cria_evento (tempo, DESISTE, evento->dado1, id_base);
+	struct evento_t *evento_viaja = cria_evento (tempo, VIAJA, evento->dado1, id_base);
 	
 	insere_lef (LEF, evento_viaja);
 
@@ -264,7 +271,7 @@ void desiste (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t 
 
 void avisa (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF){
 
-	printf("%6d: AVISA PORTEIRO BASE %d (%2d/%2d) FILA ", tempo, evento->dado2, fila_tamanho(m->bases[evento->dado2]->espera), m->bases[evento->dado2]->lotacao);
+	printf("%6d: AVISA PORTEIRO BASE %d (%2d/%2d) FILA ", tempo, evento->dado2, cardinalidade_cjt(m->bases[evento->dado2]->presentes), m->bases[evento->dado2]->lotacao);
    	fila_imprime (m->bases[evento->dado2]->espera);	
 	while (cardinalidade_cjt(m->bases[evento->dado2]->presentes) < m->bases[evento->dado2]->lotacao && !fila_vazia(m->bases[evento->dado2]->espera)){
 		int *heroi_entra = malloc (sizeof(int));
@@ -281,6 +288,8 @@ void avisa (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *L
 }
 
 void entra (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF){
+
+	insere_cjt (m->bases[evento->dado2]->presentes, evento->dado1);
 
 	int TPB = 15 + m->herois[evento->dado1]->paciencia * aleat(1, 20);
 
@@ -319,7 +328,7 @@ void viaja (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *L
 
 	int distancia = sqrt(a + b);
 
-	int duracao = distancia / m->herois[evento->dado1]->paciencia;
+	int duracao = distancia / m->herois[evento->dado1]->velocidade;
 
 	struct evento_t *evento_chega = cria_evento (tempo + duracao, CHEGA, evento->dado1, evento->dado2);
    	insere_lef (LEF, evento_chega);
@@ -329,14 +338,18 @@ void viaja (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *L
 
 void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF){
 
+	//imprime o id da missão e quais habilidades necessárias para cumpri-la.
 	printf("%6d: MISSSAO %d HAB REQ: ", tempo, evento->dado1);
 	imprime_cjt (m->missoes[evento->dado1]->hab_necessarias);
 	
+	//recebe a coordenada x e y da missão.
 	int x_missao = m->missoes[evento->dado1]->coord.x;
 	int y_missao = m->missoes[evento->dado1]->coord.y;	
 
+	//lef auxiliar para ordenar as bases por proximidade.
 	struct lef_t *ordem_bases = cria_lef();
 
+	//looping para calcular as distancia de todas as bases do mundo até a missão.
 	for (int i = 0; i < N_BASES; i++){
 		int x_base = m->bases[i]->coord.x;
 		int y_base = m->bases[i]->coord.y;
@@ -346,6 +359,7 @@ void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *
 
 		int distancia = sqrt(a + b);
 
+		//cria um evento e insere na lef. cada evento representa um base.
 		struct evento_t *base = cria_evento (distancia, -1, i, 0);
 
 		insere_lef(ordem_bases, base);
@@ -354,50 +368,73 @@ void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *
 	int j = 0;
 	int cumpri = 0;
 	struct evento_t *b = NULL;
-	struct conjunto *hab_na_base = cria_cjt(N_HABILIDADES);
 
+	//enquanto a base mais proxima nao for capaz de cumrprir a missao e ainda houver bases, passar para outra base e ver se ela cumpri.
 	while (!cumpri && j != N_BASES){
+
+		//retira da lef a base mais proxima.
 		b = retira_lef (ordem_bases);
+		
+		//conjunto para acumular as habilidades dos herois presentes na base.
+		struct conjunto *hab_na_base = cria_cjt(N_HABILIDADES);
 
-		for (int i = 0; i < m->bases[b->dado2]->lotacao; i++){
-			int id_heroi = m->bases[b->dado2]->presentes->v[i];
+		//looping para armazenar no conj hab_na_base as habilidades de todos os herois presentes na base.
+		for (int i = 0; i < m->bases[b->dado1]->presentes->card; i++){
+			int id_heroi = m->bases[b->dado1]->presentes->v[i];
 
-			hab_na_base = uniao_cjt (hab_na_base, m->herois[id_heroi]->hab);
+			struct conjunto *temp_uniao = uniao_cjt (hab_na_base, m->herois[id_heroi]->hab);
+
+			destroi_cjt (hab_na_base);
+
+			hab_na_base = temp_uniao;
+
+           /* hab_na_base = uniao_cjt(hab_na_base, m->herois[id_heroi]->hab);
+            printf("Habilidades do Herói %d na Base: ", id_heroi);
+            imprime_cjt(m->herois[id_heroi]->hab);
+            printf("Habilidades acumuladas: ");
+            imprime_cjt(hab_na_base);*/
+
 		}
 
 		printf("%6d: MISSAO %d HAB BASE %d: ", tempo, evento->dado1, b->dado1);
 		imprime_cjt (hab_na_base);
 
-
+		//se as habilidades necessárias está contida no conj de habilidades presentes na base, a base cumpri a missão.
 		if (contido_cjt(m->missoes[evento->dado1]->hab_necessarias, hab_na_base))
 			cumpri = 1;
-		else
+		else{
 			cumpri = 0;
-
-		m->tentativas++;
+			// se nao cumpri descartamos a base b, para retirar a proxima.
+			free(b);
+		}
+		
+		//destroi conj de hab_na_base que não será mais usado. ou por ja ter cumprido ou para montar o conj de habilidades de outra base.
 		j++;
+		destroi_cjt(hab_na_base);
 	}
 
+	//se a base cumpri incrementa o numero de missoes cumpridas e o xp dos herois da base que cumpriu. e descarta a base b.
 	if (cumpri){
 		
 		m->cumpridas++;
 		printf("%6d: MISSAO %d CUMPRIDA BASE %d HEROIS: ", tempo, evento->dado1, b->dado1);
 	   	imprime_cjt(m->bases[b->dado1]->presentes);
 
-		for (int h = 0; h < m->bases[b->dado2]->lotacao; h++){
-			int id_heroi = m->bases[b->dado2]->presentes->v[h];
+		for (int h = 0; h < m->bases[b->dado1]->presentes->card; h++){
+			int id_heroi = m->bases[b->dado1]->presentes->v[h];
 
 			m->herois[id_heroi]->xp++;
 		}
+		free(b);
 	}
+	//se nao cumpriu, a missao eh impossivel e adiada 24h. incrementa a tentativa.
 	else{
+		m->tentativas++;
 		printf("%6d: MISSAO %d IMPOSSIVEL\n", tempo, evento->dado1);
 		struct evento_t *evento_missao = cria_evento (tempo + 24*60, MISSAO, evento->dado1, 0);
 		insere_lef (LEF, evento_missao);
 	}
-	
 	destroi_lef (ordem_bases);
-	destroi_cjt (hab_na_base);
 }
 	
 void fim (int tempo, struct mundo *m){
@@ -406,10 +443,9 @@ void fim (int tempo, struct mundo *m){
 	for (int i = 0; i < N_HEROIS; i++){
 		printf("HEROI %2d PAC %3d VEL %4d  EXP %4d HABS ", i, m->herois[i]->paciencia, m->herois[i]->velocidade, m->herois[i]->xp);
 		imprime_cjt(m->herois[i]->hab);
-		printf("\n");
 	}
 
-	printf("%d/%d MISSOES CUMPRIDAS (%.2f%%), MEDIA %.2f TENATIVAS/MISSAO\n", m->cumpridas, N_MISSOES, (float)m->cumpridas/N_MISSOES * 100, (float)m->tentativas / m->cumpridas);
+	printf("%d/%d MISSOES CUMPRIDAS (%.2f%%), MEDIA %.2f TENTATIVAS/MISSAO\n", m->cumpridas, N_MISSOES, (float) m->cumpridas/N_MISSOES * 100 , (float)m->tentativas / m->cumpridas);
 	
 
 	destroi_mundo(m);

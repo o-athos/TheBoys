@@ -12,7 +12,7 @@ struct conjunto *cria_cjt (int max){
 	c->ptr = 0;
 	c->max = max;
 	c->v = (int *) malloc(max * sizeof(int));
-	if (c->v == NULL){
+	if (!c->v){
 		free(c);
 		return NULL;
 	}

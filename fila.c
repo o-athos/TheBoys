@@ -18,13 +18,13 @@ struct fila *fila_cria (){
 
 void fila_destroi (struct fila **f){
 	
-	 while ((*f)->ini != NULL) {
+      while ((*f)->ini != NULL) {
         struct nodo *temp = (*f)->ini;
         (*f)->ini = (*f)->ini->prox;
         free(temp);
-	 }
-     free(*f);
-     *f = NULL;
+      }
+      free(*f);
+      *f = NULL;
 }
 
 int enqueue (struct fila *fila, int dado){
@@ -46,24 +46,25 @@ int enqueue (struct fila *fila, int dado){
 		fila->fim = novo;
 	}
 
-	fila->tamanho++;
+	(fila->tamanho)++;
 	return 1;
 }
 
 int dequeue (struct fila *fila, int *dado){
 	
-	if (fila_vazia(fila))
+	if (fila == NULL || fila_vazia(fila))
 		return 0;
 
-	*dado = fila->ini->chave;
+	
 	struct nodo *temp = fila->ini;
+	*dado = temp->chave;
 	fila->ini = fila->ini->prox;
 	free(temp);
 
 	if (fila->ini == NULL)
 		fila->fim = NULL;
 
-	fila->tamanho--;
+	(fila->tamanho)--;
 	return 1;
 }
 

@@ -14,6 +14,10 @@ int main() {
     
     
     while (relogio != T_FIM_DO_MUNDO){
+      
+      /*printf("LEF: \n");
+      imprime_lef(LEF);
+      printf("\n");*/
       struct evento_t *ev = retira_lef(LEF);
       
       relogio = ev->tempo;
@@ -45,7 +49,9 @@ int main() {
      free(ev); 
     } 
     fim (relogio, m);
-      
+    destroi_lef(LEF);
+    //imprime_mundo (m);
+    //destroi_mundo(m); 
     //imprime_lef (LEF);
 
     return 0;

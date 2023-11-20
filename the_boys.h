@@ -6,9 +6,10 @@
 #define T_FIM_DO_MUNDO 525600
 #define N_TAMANHO_MUNDO 20000
 #define N_HABILIDADES 10
-#define N_HEROIS 50
-#define N_BASES 8
-#define N_MISSOES 5256
+#define N_HEROIS (N_HABILIDADES * 5)
+#define N_BASES (N_HEROIS / 6)
+#define N_MISSOES (T_FIM_DO_MUNDO / 100)
+
 
 #define CHEGA 1
 #define ESPERA 2

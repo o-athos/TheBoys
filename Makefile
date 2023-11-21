@@ -2,7 +2,9 @@
 CC = gcc
 
 # Opções de compilação
-CFLAGS = -Wall -lm 
+CFLAGS = -Wall
+
+DFLAGS = -lm
 
 # Nome do executável
 TARGET = the_boys
@@ -18,11 +20,11 @@ PACKAGE_NAME = the_boy_athos
 
 # Regra padrão: compilar todos os objetos e criar o executável
 $(TARGET): $(OBJECTS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJECTS) $(DFLAGS)
 
 # Regra para compilar cada arquivo fonte em um objeto
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@ $(DFLAGS)
 
 # Regra para criar um pacote
 entrega: $(TARGET)

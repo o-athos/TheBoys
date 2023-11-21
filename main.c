@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 int main() {
-    srand(0);
+    srand(8);
     struct lef_t *LEF = cria_lef();
     
     struct mundo *m = cria_mundo();
@@ -15,9 +15,6 @@ int main() {
     
     while (relogio != T_FIM_DO_MUNDO){
       
-      /*printf("LEF: \n");
-      imprime_lef(LEF);
-      printf("\n");*/
       struct evento_t *ev = retira_lef(LEF);
       
       relogio = ev->tempo;
@@ -29,6 +26,9 @@ int main() {
         case ESPERA:
           espera (relogio, m, ev, LEF);
           break;
+		case DESISTE:
+		  desiste (relogio, m, ev, LEF);
+		  break;
         case AVISA:
           avisa (relogio, m, ev, LEF);
           break;
@@ -50,9 +50,6 @@ int main() {
     } 
     fim (relogio, m);
     destroi_lef(LEF);
-    //imprime_mundo (m);
-    //destroi_mundo(m); 
-    //imprime_lef (LEF);
 
     return 0;
 }

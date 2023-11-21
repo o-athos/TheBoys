@@ -52,11 +52,11 @@ struct missao {
 
 struct mundo {
 
-        int relogio;
+    int relogio;
         
-        int cumpridas;
+    int cumpridas;
         
-        int tentativas;
+    int tentativas;
         
 	struct heroi* herois[N_HEROIS];
 

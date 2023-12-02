@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "fila.h"
 
+/*cria fila vazia. se falhar retorna NULL*/
 struct fila *fila_cria (){
 
 	struct fila *nova = (struct fila *) malloc (sizeof (struct fila ));
@@ -16,6 +17,7 @@ struct fila *fila_cria (){
 	return nova;
 }
 
+/*destroi fila, liberando espaço dos componentes*/
 void fila_destroi (struct fila **f){
 	
       while ((*f)->ini != NULL) {
@@ -27,6 +29,7 @@ void fila_destroi (struct fila **f){
       *f = NULL;
 }
 
+/*insere FIFO*/
 int enqueue (struct fila *fila, int dado){
 	
 	struct nodo *novo = (struct nodo *)malloc(sizeof(struct nodo));
@@ -37,10 +40,12 @@ int enqueue (struct fila *fila, int dado){
 	novo->chave = dado;
 	novo->prox = NULL;
 
+	//se fila esta vazia
 	if (fila->fim == NULL){
 		fila->ini = novo;
 		fila->fim = novo;
 	} 
+	//insere no fim
 	else {
 		fila->fim->prox = novo;
 		fila->fim = novo;
@@ -50,12 +55,13 @@ int enqueue (struct fila *fila, int dado){
 	return 1;
 }
 
+/*retira FIFO*/
 int dequeue (struct fila *fila, int *dado){
 	
 	if (fila == NULL || fila_vazia(fila))
 		return 0;
 
-	
+	//devolve elemento retirado. atualiza inicio da fila. libera espaço do nodo
 	struct nodo *temp = fila->ini;
 	*dado = temp->chave;
 	fila->ini = fila->ini->prox;
@@ -68,14 +74,17 @@ int dequeue (struct fila *fila, int *dado){
 	return 1;
 }
 
+/*devolve tamanho da fila*/
 int fila_tamanho (struct fila *fila){
 	return fila->tamanho;
 }
 
+/*verifica fila vazia*/
 int fila_vazia (struct fila *fila){
 	return fila->ini == NULL;
 }
 
+/*imprime fila no formato pedido*/
 void fila_imprime (struct fila *fila){
 
 	struct nodo *aux = fila->ini;
@@ -87,20 +96,3 @@ void fila_imprime (struct fila *fila){
 	}
 	printf("]\n");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

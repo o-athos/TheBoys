@@ -1,16 +1,3 @@
-/*
- * TAD pilha
- * -> versao com lista ligada com nodo cabeca
- * Autores:
- *    Marcos Alexandre Castilho
- *    Luis Carlos Erpen de Bona
- *
- * Versao 3.0.0 de 03/10/2023
-*/
-
-#ifndef _fila_t_H
-#define _fila_t_H
-
 struct nodo {
     int chave;
     struct nodo *prox;
@@ -22,35 +9,23 @@ struct fila {
     int tamanho;
 };
 
-/* 
- * Cria e retorna uma nova fila.
- * Retorna NULL em caso de erro de alocação.
-*/
+/*cria uma nova fila vazia*/
 struct fila *fila_cria ();
 
-/* Desaloca toda memoria da fila e faz fila receber NULL. */
+/* libera a memoria da fila */
 void fila_destroi (struct fila **fila);
 
-/* 
- * Insere dado na fila (politica FIFO). Retorna 1
- * em caso de sucesso e 0 em caso de falha.
-*/
+/* insere na fila no fim (FIFO)*/
 int enqueue (struct fila *fila, int dado);
 
-/* 
- * Remove dado da fila (politica FIFO) e retorna o elemento 
- * no parametro dado. A funcao retorna 1 em caso de 
- * sucesso e 0 no caso da fila estar vazia.
-*/
+/* retira da fila o primeiro (FIFO)*/
 int dequeue (struct fila *fila, int *dado);
- 
-/* Retorna o numero de elementos da pilha, que pode ser 0. */
+
+/*devolve o tamanho da fila*/
 int fila_tamanho (struct fila *fila);
 
-/* Retorna 1 se fila vazia, 0 em caso contrario. */ 
+/* verifica se fila vazia */ 
 int fila_vazia (struct fila *fila);
 
-/* Imprime a fila no formato "[ e1 e2 ... en ]" 
- * Se a fila for vazia imprime "[ ]" */
+/*imprime fila */
 void fila_imprime (struct fila *fila);
-#endif

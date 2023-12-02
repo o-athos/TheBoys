@@ -492,17 +492,4 @@ void fim (int tempo, struct mundo *m){
 	
 
 	destroi_mundo(m);
-}
-
-	
-	
-
-
-
-
-	
-		
-		
-	
-	
-	
+}	

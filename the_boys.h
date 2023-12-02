@@ -99,21 +99,3 @@ void sai (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF
 void viaja (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
 void missao (int tempo, struct mundo *m, struct evento_t *evento, struct lef_t *LEF);
 void fim (int tempo, struct mundo *m);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
